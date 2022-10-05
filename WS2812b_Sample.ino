@@ -288,7 +288,7 @@ void Pattern4(byte red, byte green, byte blue)
       //leds[ii] = rgb;
 
     //Second quadrant
-    for (int ii = numLEDs / 4; ii < numLEDs / 2; ii++);
+    for (int ii = numLEDs / 4; ii < numLEDs / 2; ii++)
       leds[ii] = CRGB(red * pattern[i][1], green * pattern[i][1], blue * pattern[i][1]);
       //leds[ii] = rgb;
 
@@ -321,7 +321,7 @@ void Pattern5()
   int offset = 1; //One half additional width of marque
 
   //Move marque forward along strip
-  for (int i = 0 - 2 * offset; i < numLEDs + 2 * offset; i++)
+  for (int i = (0 - 2 * offset); i < (numLEDs + 2 * offset); i++)
   {
     //Set LEDs
     for (int ii = 0; ii < numLEDs; ii++)
@@ -344,10 +344,10 @@ void Pattern5()
   }
 
   //Move marque backward along strip
-  for (int i = numLEDs + 2 * offset; i > 0 - 2 * offset; i--)
+  for (int i = (numLEDs + 2 * offset); i > (0 - 2 * offset); i--)
   {
     //Set LEDs
-    for (int ii = numLEDs; ii > 0; ii--)
+    for (int ii = numLEDs; ii >= 0; ii--)
     {
       if (ii >= i - offset && ii <= i + offset)
         leds[ii] = CRGB(0, 255, 0);
