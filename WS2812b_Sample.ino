@@ -1,6 +1,9 @@
 #include <FastLED.h>
 
-//#define DEBUG
+//This sketch is setup for an Arduino Uno with a momentary pushbutton connected to digital pin 2.
+
+//#define DEBUG               //Write debug information to serial.
+#define DEVELOPMENT 7       //Development to manually set mode to pattern under development. Change number to select pattern in switch statement.
 
 //----- Pin Definitions -----
 const byte LEDPin = 7;
@@ -9,11 +12,12 @@ const byte interruptPin = 2;
 //----- Settings -----
 const int numLEDs = 20;
 const byte brightness = 127;
+const byte numPatterns = 7;
 
 //----- Functional Variables -----
 bool interruptFlag = false;
-byte mode = 0;
 CRGB leds[numLEDs];
+byte mode = 0;
 
 //----- Debug Variables -----
 #ifdef DEBUG
@@ -23,9 +27,14 @@ CRGB leds[numLEDs];
 void setup()
 {
   //Interrupt Setup
+  //Keeping pinmode outside of compiler directive because button is always attached.
   pinMode(interruptPin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin), ChangeMode, RISING);
-  
+  #ifndef DEVELOPMENT
+    attachInterrupt(digitalPinToInterrupt(interruptPin), ChangeMode, RISING);
+  #else
+    mode = DEVELOPMENT;
+  #endif
+
   //Serial Setup
   #ifdef SerialPrint
     Serial.begin(9600);
@@ -35,6 +44,8 @@ void setup()
   delay(3000);  //LED safety delay.
   FastLED.addLeds<WS2812B, LEDPin, GRB>(leds, numLEDs);
   FastLED.setBrightness(brightness);
+
+  Clear();
 }
 
 void loop()
@@ -63,6 +74,9 @@ void loop()
       break;
     case 6:
       Pattern5();
+      break;
+    case 7:
+      Pattern6();
       break;
     default:
       mode = 0;
@@ -365,4 +379,30 @@ void Pattern5()
 
     delay(50);
   }
+}
+
+//Pattern to light one LED at a time for mapping installed LEDs.
+void Pattern6()
+{
+  for(int i = 0; i < numLEDs; i++)
+  {
+    leds[i] = CRGB(0, 255, 0);
+
+    if(i > 0)
+      leds[i - 1] = CRGB(0, 0, 0);
+
+    if (interruptFlag)
+    {
+      interruptFlag = false;
+      break;
+    }
+
+    FastLED.show();
+
+    delay(500);
+  }
+
+  leds[numLEDs - 1] = CRGB(0, 0, 0);
+
+  FastLED.show();
 }
